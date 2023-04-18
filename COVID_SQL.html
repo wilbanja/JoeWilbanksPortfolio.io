@@ -1065,8 +1065,9 @@ body .markdown-body
 .highlight .vi{color:teal}
 .highlight .il{color:#009999}
 .highlight .gc{color:#999;background-color:#EAF2F5}
-</style><title>COVID Project</title></head><body><article class="markdown-body"><h1 id="covid-portfolio-project">COVID Portfolio Project<a class="headerlink" href="#covid-portfolio-project" title="Permanent link"></a></h1>
-<h3 id="skills-used-joinscte-temp-tables-aggregate-functions-windowed-aggregate-function-creating-views-converting-data-types">Skills used: Joins, CTE, Temporary tables, Aggregate Functions, Windowed aggregate function, Creating Views, Converting Data Types<a class="headerlink" href="#skills-used-joinscte-temp-tables-aggregate-functions-windowed-aggregate-function-creating-views-converting-data-types" title="Permanent link"></a></h3>
+</style><title>COVID Analysis using SQL</title></head><body><article class="markdown-body"><h1 id="covid-portfolio-project">COVID Analysis using SQL<a class="headerlink" href="#covid-portfolio-project" title="Permanent link"></a></h1>
+<h4>Purpose: Demonstrate skills in SQL by analyzing publicly available global COVID-19 data. This data includes population, cases, deaths, vaccinations, and hospital/ICU admissions by date.</h4>
+<h4 id="skills-used-joinscte-temp-tables-aggregate-functions-windowed-aggregate-function-creating-views-converting-data-types">Skills used: Joins, CTE, Temporary tables, Aggregate Functions, Windowed aggregate function, Creating Views, Converting Data Types<a class="headerlink" href="#skills-used-joinscte-temp-tables-aggregate-functions-windowed-aggregate-function-creating-views-converting-data-types" title="Permanent link"></a></h4>
 <h2 id="import-data">Import Data<a class="headerlink" href="#import-data" title="Permanent link"></a></h2>
 <ul>
 <li>Download data in csv format from <a href="https://ourworldindata.org/covid-deaths">https://ourworldindata.org/covid-deaths</a></li>
@@ -1079,13 +1080,13 @@ body .markdown-body
 <li>Convert date text string to separate year, month, day numeric columns</li>
 </ul>
 <h2 id="data-check">Data Check<a class="headerlink" href="#data-check" title="Permanent link"></a></h2>
-<h3 id="general-check-of-deaths-data">General check of Deaths data<a class="headerlink" href="#general-check-of-deaths-data" title="Permanent link"></a></h3>
+<h3 id="general-check-of-deaths-data">General Check of Deaths Data<a class="headerlink" href="#general-check-of-deaths-data" title="Permanent link"></a></h3>
 <p>SELECT *<br />
 FROM Deaths<br />
 ORDER BY location, date  </p>
 <p>Sample Deaths Results
 <img alt="Sample Deaths Results" src="./images/covid_sql/DeathsDataCheck.png" /></p>
-<h3 id="general-check-of-vaccinations-data">General check of Vaccinations data<a class="headerlink" href="#general-check-of-vaccinations-data" title="Permanent link"></a></h3>
+<h3 id="general-check-of-vaccinations-data">General Check of Vaccinations Data<a class="headerlink" href="#general-check-of-vaccinations-data" title="Permanent link"></a></h3>
 <p>SELECT *<br />
 FROM Vaccinations<br />
 ORDER BY location, date  </p>
@@ -1099,39 +1100,44 @@ FROM deaths<br />
 WHERE location = &lsquo;United States&rsquo;<br />
 ORDER BY location, date</p>
 <p><img alt="US COVID Death Percentage Table" src="./images/covid_sql/USDeathPercentTable.png" /></p>
+<p>The graph below shows how the death percentage decreased over time as treatment options improved and successive variants became less lethal (even if they were more contagious).</p>
 <p><img alt="US COVID Death Percentage vs. Time" src="./images/covid_sql/USCOVIDDeathPercentage.png" />  </p>
+<p>The graph below shows the evolution over time of total COVID cases. Significant increases are noted in the winter of 2020/2021 and 2021/2022.</p>
 <p><img alt="US COVID Total Cases" src="./images/covid_sql/USTotalCases.png" /></p>
-<h3 id="countries-with-highest-per-capita-infection-rate-may-not-be-accurate-due-to-people-contracting-covid-multiple-times">Countries with highest per capita infection rate (may not be accurate due to people contracting COVID multiple times)<a class="headerlink" href="#countries-with-highest-per-capita-infection-rate-may-not-be-accurate-due-to-people-contracting-covid-multiple-times" title="Permanent link"></a></h3>
+<h3 id="countries-with-highest-per-capita-infection-rate-may-not-be-accurate-due-to-people-contracting-covid-multiple-times">Countries with Highest Per Capita Infection Rate<a class="headerlink" href="#countries-with-highest-per-capita-infection-rate-may-not-be-accurate-due-to-people-contracting-covid-multiple-times" title="Permanent link"></a></h3>
+<h4>Note: The infection percentage is probably not accurate due to people contracting COVID multiple times.</h4>
 <p>SELECT location, population<br />
 &nbsp;&nbsp;&nbsp;,MAX(total_cases) as MaxCases<br />
-&nbsp;&nbsp;&nbsp;,MAX(total_cases<em>1.0/population)</em>100.0 as PercentPopulationInfected<br />
+&nbsp;&nbsp;&nbsp;,MAX(total_cases * 1.0 / population) * 100.0 as PercentPopulationInfected<br />
 FROM deaths<br />
 WHERE continent &lt;&gt; &lsquo;&rsquo; AND total_cases IS NOT NULL<br />
 GROUP BY location, population<br />
 ORDER BY PercentPopulationInfected DESC  </p>
 <p><img alt="Highest per capita infection rate" src="./images/covid_sql/HighestPerCapitaInfectionRate.png" /></p>
-<h3 id="countries-with-highest-number-of-deaths">Countries with highest number of deaths<a class="headerlink" href="#countries-with-highest-number-of-deaths" title="Permanent link"></a></h3>
+<h3 id="countries-with-highest-number-of-deaths">Countries with Highest Number of Deaths<a class="headerlink" href="#countries-with-highest-number-of-deaths" title="Permanent link"></a></h3>
 <p>SELECT location, MAX(total_deaths) AS TotalDeathCount<br />
 FROM deaths<br />
 WHERE continent &lt;&gt; &lsquo;&rsquo; AND total_deaths IS NOT NULL<br />
 GROUP BY location<br />
 ORDER BY TotalDeathCount DESC  </p>
 <p><img alt="Total Death Count" src="./images/covid_sql/TotalDeathCountByCountry.png" /></p>
-<h3 id="continents-with-highest-number-of-deaths">Continents with highest number of deaths<a class="headerlink" href="#continents-with-highest-number-of-deaths" title="Permanent link"></a></h3>
+<h3 id="total-Deaths-Globally-and-by-continent">Total Deaths Globally and by Continent<a class="headerlink" href="#continents-with-highest-number-of-deaths" title="Permanent link"></a></h3>
 <p>SELECT location, MAX(total_deaths) as TotalDeathCount<br />
 FROM deaths<br />
 WHERE continent = &lsquo;&rsquo;<br />
 GROUP BY location<br />
 ORDER BY TotalDeathCount DESC  </p>
-<h3 id="global-number-of-deaths-until-today">Global number of deaths until today<a class="headerlink" href="#global-number-of-deaths-until-today" title="Permanent link"></a></h3>
+<p><img alt="Total Deaths Globally and by Continent" src="./images/covid_sql/TotalDeathCountByContinent.png" /></p>
+<h3 id="global-number-of-deaths-until-today">Global Number of Deaths as of 2023 Apr 08<a class="headerlink" href="#global-number-of-deaths-until-today" title="Permanent link"></a></h3>
 <p>SELECT SUM(new_cases) AS TotalCases<br />
 &nbsp;&nbsp;&nbsp;,SUM(new_deaths) AS TotalDeaths<br />
-&nbsp;&nbsp;&nbsp;,SUM(new_deaths<em>1.0)/NULLIF(SUM(new_cases),0)</em>100 AS DeathPercentage<br />
+&nbsp;&nbsp;&nbsp;,SUM(new_deaths * 1.0) / NULLIF(SUM(new_cases),0) * 100 AS DeathPercentage<br />
 FROM deaths<br />
 WHERE continent IS NOT NULL  </p>
-<p><img alt="Total Global Death Count as of 2023 Apr 08" src="./images/covid_sqls/TotalGlobalDeathCount.png" /></p>
-<h3 id="join-deaths-and-vaccinations-tables">Join deaths and vaccinations tables<a class="headerlink" href="#join-deaths-and-vaccinations-tables" title="Permanent link"></a></h3>
-<h3 id="running-vaccination-totals-by-country">Running vaccination totals by country<a class="headerlink" href="#running-vaccination-totals-by-country" title="Permanent link"></a></h3>
+<p><img alt="Total Global Death Count as of 2023 Apr 08" src="./images/covid_sql/TotalGlobalDeathCount.png" /></p>
+<h3 id="join-deaths-and-vaccinations-tables"><u>Join deaths and vaccinations tables</u><a class="headerlink" href="#join-deaths-and-vaccinations-tables" title="Permanent link"></a></h3>
+<h3 id="running-vaccination-totals-by-country">Running Vaccination Totals by Country<a class="headerlink" href="#running-vaccination-totals-by-country" title="Permanent link"></a></h3>
+<h4>Note: The vaccination percentage is probably not accurate due to booster vaccinations.</h4>
 <p>SELECT d.continent, d.location, d.date, d.population
 &nbsp;&nbsp;&nbsp;,v.new_people_vaccinated_smoothed<br />
 &nbsp;&nbsp;&nbsp;,SUM(v.new_people_vaccinated_smoothed)<br />
@@ -1143,7 +1149,7 @@ JOIN vaccinations v<br />
 WHERE d.continent IS NOT NULL AND d.continent &lt;&gt; &lsquo;&rsquo;<br />
 ORDER BY 2, 3  </p>
 <p><img alt="Running Vaccination Total by Country" src="./images/covid_sql/RunningPeopleVaccinated.png" /></p>
-<h3 id="running-vaccination-percentage-by-country-using-cte">Running vaccination percentage by country using CTE<a class="headerlink" href="#running-vaccination-percentage-by-country-using-cte" title="Permanent link"></a></h3>
+<h3 id="running-vaccination-percentage-by-country-using-cte">Running Vaccination Percentage by Country using CTE<a class="headerlink" href="#running-vaccination-percentage-by-country-using-cte" title="Permanent link"></a></h3>
 <p>WITH PopvsVaccination (continent, location, date, population<br />
 &nbsp;&nbsp;&nbsp;, new_people_vaccinated_smoothed, VaccinationSum) AS <br />
 (<br />
@@ -1156,10 +1162,10 @@ JOIN vaccinations v<br />
     AND d.date = v.date<br />
 WHERE d.continent IS NOT NULL AND d.continent &lt;&gt; &lsquo;&rsquo;<br />
 )  </p>
-<p>SELECT *, VaccinationSum<em>1.0/population</em>100 AS PercentVaccinated<br />
+<p>SELECT *, VaccinationSum * 1.0 / population * 100 AS PercentVaccinated<br />
 FROM PopvsVaccination  </p>
 <p><img alt="Running Vaccination percentage by Country using CTE" src="./images/covid_sql/RunningVaccinationPercentageByCountry.png" /></p>
-<h3 id="running-vaccination-percentage-by-country-using-temporary-table">Running vaccination percentage by country using temporary table<a class="headerlink" href="#running-vaccination-percentage-by-country-using-temporary-table" title="Permanent link"></a></h3>
+<h3 id="running-vaccination-percentage-by-country-using-temporary-table">Running Vaccination Percentage by Country using Temporary Table<a class="headerlink" href="#running-vaccination-percentage-by-country-using-temporary-table" title="Permanent link"></a></h3>
 <p>&ndash; Drop table if it exists<br />
 DROP TABLE IF EXISTS PercentPopulationVaccinated;  </p>
 <p>&ndash; Create the table and set data types<br />
@@ -1183,10 +1189,10 @@ JOIN vaccinations v<br />
 &nbsp;&nbsp;&nbsp;AND d.date = v.date<br />
 WHERE d.continent IS NOT NULL AND d.continent &lt;&gt; &lsquo;&rsquo;;  </p>
 <p>&ndash; Show data from temp table<br />
-SELECT <em>, (VaccinationSum</em>1.0/population) * 100 AS PercentVaccinated<br />
+SELECT *, (VaccinationSum * 1.0 / population) * 100 AS PercentVaccinated<br />
 FROM PercentPopulationVaccinated;  </p>
 <p><img alt="Running Vaccination percentage by Country using Temp Table" src="./images/covid_sql/RunningVaccinationPercentageByCountryTemp.png" /></p>
-<h3 id="create-view-of-vaccination-sum-to-store-data-for-visualizations">Create view of vaccination sum to store data for visualizations<a class="headerlink" href="#create-view-of-vaccination-sum-to-store-data-for-visualizations" title="Permanent link"></a></h3>
+<h3 id="create-view-of-vaccination-sum-to-store-data-for-visualizations">Create View of Vaccination Sum to Store Data for Visualizations<a class="headerlink" href="#create-view-of-vaccination-sum-to-store-data-for-visualizations" title="Permanent link"></a></h3>
 <p>DROP VIEW IF EXISTS vPercentPopulationVaccinated;</p>
 <p>&ndash; Create view
 CREATE VIEW vPercentPopulationVaccinated AS<br />
@@ -1209,4 +1215,5 @@ FROM vPercentPopulationVaccinated;  </p>
 FROM deaths<br />
 WHERE location = &lsquo;United States&rsquo;<br />
 ORDER BY date  </p>
+<p>The graph below shows how the hospital admission rate peaked several times in the U.S. due to: a) winter and b) different waves of COVID variants (Delta and Omicron).</p>
 <p><img alt="US COVID ICU &amp; Hospital Admissions.png" src="./images/covid_sql/US%20COVID%20ICU%20%26%20Hospital%20Admissions.png" /></p></article></body></html>
